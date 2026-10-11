@@ -37,6 +37,7 @@ fastboot flash recovery OrangeFox-R12.0-Unofficial-cepheus.img
 
 - 起動は、完全に電源を切ってから **音量上 + 電源**。ROM の電源メニューの recovery からも入れる
 - recovery パーティションからの起動には **recovery dtbo の同梱が必須**(ヘッダ v2 で空だと bootloader が fastboot に落ちる)。device tree の `prebuilt/dtbo.img` がそれ
+- `adb sideload` は、device tree の `init.recovery.qcom.rc` の sideload 用 USB 構成で動く(`adb devices` が `sideload` になる)
 - `fastboot boot` は、音量下 + 電源で入った fastboot からのみ使える(失敗後の縮退した fastboot では `Load Error`)
 
 ## ROM を更新したとき、再ビルドが要るか
