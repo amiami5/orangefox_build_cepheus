@@ -39,6 +39,30 @@ fastboot flash recovery OrangeFox-R12.0-Unofficial-cepheus.img
 - recovery パーティションからの起動には **recovery dtbo の同梱が必須**(ヘッダ v2 で空だと bootloader が fastboot に落ちる)。device tree の `prebuilt/dtbo.img` がそれ
 - `fastboot boot` は、音量下 + 電源で入った fastboot からのみ使える(失敗後の縮退した fastboot では `Load Error`)
 
+## ROM を更新したとき、再ビルドが要るか
+
+recovery は ROM の userspace を使わないため、**ROM の更新のほとんどは再ビルド不要**。
+カーネルと暗号化まわりが変わったときだけ、device tree の `prebuilt/` などを入れ替えて再ビルドする。
+
+| ROM 側の変更 | 再ビルド | 入れ替え先 |
+|---|---|---|
+| カーネルのソース・config の変更(`CONFIG_UNICODE`、FS_ENCRYPTION、DM_DEFAULT_KEY、UFS 暗号化まわり、ドライバ修正) | **要** | `prebuilt/Image.gz` |
+| dts の変更(dtb が変わる) | **要** | `prebuilt/dtbs/`、`prebuilt/dtbo.img` |
+| 暗号化方式の変更(fstab の `fileencryption` / `wrappedkey` の指定) | **要** | `recovery/root/system/etc/recovery.fstab`、`BoardConfig.mk` |
+| keymaster / gatekeeper の HAL バージョン、TZ ファームウェアの更新 | **要** | `recovery/root/` の blob |
+| Android のメジャーバージョン更新(synthetic password の形式変更など) | 場合による | OrangeFox 側の復号実装が追いつくか確認する |
+| アプリ・framework・system / vendor イメージ、SELinux ポリシーの更新 | 不要 | - |
+
+判断に迷ったら、ROM のカーネルと同じ内容かを見る。同じなら再ビルド不要。
+
+```bash
+md5sum <ROM のソース>/out/target/product/cepheus/kernel \
+       12.1/device/xiaomi/cepheus/prebuilt/Image.gz
+```
+
+カーネルが変わっていても、変更が /data の復号に関係しない場合(例: 音声ドライバのログ出力の修正)は、
+次にカーネルを更新するときにまとめて取り込めば足りる。
+
 ## ROM のカーネルを更新したとき
 
 ROM 側(`out/target/product/cepheus/`)の成果物を device tree に入れ直す。
