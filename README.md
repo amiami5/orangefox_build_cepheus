@@ -1,5 +1,7 @@
 # orangefox_build_cepheus
 
+[English](README.en.md) | **日本語**
+
 Xiaomi Mi 9 (cepheus) 用の OrangeFox(fox_12.1) を、ROM の 4.19 カーネルでビルドするための環境です。
 ソース本体(`12.1/`)は含みません。同期スクリプトで取得します。
 
